@@ -14,6 +14,13 @@ export const pushDockerContainer = async ({
 }): Promise<boolean> => {
   try {
     core.startGroup('Pushing container to heroku registry...');
+    
+    const containerLoginResult = await runCommand('heroku container:login', {
+        env: { HEROKU_API_KEY: herokuApiKey },
+        options: { cwd },
+      });
+    
+    console.log('heroku container:login :', containerLoginResult);
 
     const tags = processTypes.map((processType) => `registry.heroku.com/${herokuAppName}/${processType}`);
 
