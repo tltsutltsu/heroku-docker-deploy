@@ -220,11 +220,19 @@ const utils_1 = __webpack_require__(293);
 const pushDockerContainer = ({ herokuApiKey, herokuAppName, cwd, processTypes, }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         core.startGroup('Pushing container to heroku registry...');
-        const containerLoginResult = yield (0, utils_1.runCommand)('heroku container:login', {
+        console.log('Logining to heroku container registry...');
+        yield (0, utils_1.runCommand)('heroku container:login', {
             env: { HEROKU_API_KEY: herokuApiKey },
             options: { cwd },
         });
-        console.log('heroku container:login :', containerLoginResult);
+        console.log('Creating app in case if it does not exists');
+        try {
+            yield (0, utils_1.runCommand)(`heroku create ${herokuAppName}`, {
+                env: { HEROKU_API_KEY: herokuApiKey },
+                options: { cwd },
+            });
+        }
+        catch (_) { }
         const tags = processTypes.map((processType) => `registry.heroku.com/${herokuAppName}/${processType}`);
         for (const tag of tags) {
             yield (0, utils_1.runCommand)(`docker push ${tag}`, {
